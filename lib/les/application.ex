@@ -12,6 +12,7 @@ defmodule Les.Application do
       supervisor(Les.Repo, []),
       # Start the endpoint when the application starts
       supervisor(LesWeb.Endpoint, []),
+      supervisor(Les.EntitiesSupervisor, [])
       # Start your own worker by calling: Les.Worker.start_link(arg1, arg2, arg3)
       # worker(Les.Worker, [arg1, arg2, arg3]),
     ]

@@ -5,9 +5,16 @@ defmodule Les.UserEntity do
     defstruct [:user]
   end
 
+  def get_entity_name(id), do: :"user_entity_#{id}"
+
   def start_link(id) do
-    GenServer.start_link(__MODULE__, [id], name: :"user_entity_#{id}")
+    GenServer.start_link(__MODULE__, [id], name: get_entity_name(id))
   end
+
+  # def create(attrs) do
+  #   {:ok, user} = Les.Accounts.create_user(attrs)
+  #   {:ok, pid} = start_link(user.id)
+  # end
 
   def init([id]) do
     user = Les.Accounts.get_user!(id)
