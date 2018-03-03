@@ -11,10 +11,14 @@ defmodule Les.UserEntity do
     GenServer.start_link(__MODULE__, [id], name: get_entity_name(id))
   end
 
-  # def create(attrs) do
-  #   {:ok, user} = Les.Accounts.create_user(attrs)
-  #   {:ok, pid} = start_link(user.id)
-  # end
+  def create(attrs) do
+    with {:ok, user} <- Les.Accounts.create_user(attrs),
+         {:ok, _} <- Les.EntitiesSupervisor.start_user(user.id) do
+      {:ok, user}
+    else
+      error -> error
+    end
+  end
 
   def init([id]) do
     user = Les.Accounts.get_user!(id)
