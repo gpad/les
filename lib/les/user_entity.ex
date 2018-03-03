@@ -34,10 +34,12 @@ defmodule Les.UserEntity do
   end
 
   def handle_call({:update, attrs}, _form, state) do
-    {res, new_state} = case Les.Accounts.update_user(state.user, attrs) do
-      {:ok, user} -> {{:ok, user}, %{state | user: user}}
-      res -> {res, state}
-    end
+    {res, new_state} =
+      case Les.Accounts.update_user(state.user, attrs) do
+        {:ok, user} -> {{:ok, user}, %{state | user: user}}
+        res -> {res, state}
+      end
+
     {:reply, res, new_state}
   end
 

@@ -13,7 +13,6 @@ defmodule Les.EntitiesSupervisor do
   end
 
   def init(_) do
-    Supervisor.init([], [strategy: :one_for_one])
+    Supervisor.init([], strategy: :one_for_one)
   end
-
 end
