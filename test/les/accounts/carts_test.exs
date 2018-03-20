@@ -1,11 +1,12 @@
-defmodule Les.AccountsTest do
+defmodule Les.CartsTest do
   use Les.DataCase
 
   alias Les.Accounts
 
   describe "users" do
-    alias Les.Accounts.User
-    alias Les.Accounts.Cart
+    # alias Les.Accounts.User
+    # alias Les.Accounts.Cart
+    alias Les.Accounts.CartItem
 
     @valid_attrs %{name: "some name", username: "some username"}
     # @update_attrs %{name: "some updated name", username: "some updated username"}
@@ -20,18 +21,29 @@ defmodule Les.AccountsTest do
     #   user
     # end
 
-    test "create empty user with cart and empty items" do
-      {:ok, user} = Accounts.create_user(@valid_attrs)
-      assert %User{
-        cart: %Cart{items: []}
-      } = user
+    def product_fixture() do
+      %Les.Product{
+        id: UUID.uuid4(),
+        description: "test",
+        provider: "test",
+        ext_id: 1,
+        price: 666,
+        qty: 123456,
+      }
     end
 
-    # test "list_users/0 returns all users" do
-    #   user = user_fixture()
-    #   assert Accounts.list_users() == [user]
-    # end
-    #
+    test "add item in a empty cart" do
+      {:ok, user} = Accounts.create_user(@valid_attrs)
+      product = product_fixture()
+      {:ok, cart} = Les.Carts.add_product(user.cart, product, 1)
+      assert [%CartItem{}=item] = cart.items
+      assert item.cart_id == cart.id
+      assert item.description == product.description
+      assert item.price == product.price
+      assert item.product_id == product.id
+      assert item.qty == 1
+    end
+
     # test "get_user!/1 returns the user with given id" do
     #   user = user_fixture()
     #   assert Accounts.get_user!(user.id) == user

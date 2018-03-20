@@ -7,6 +7,7 @@ defmodule Les.Accounts.User do
   schema "users" do
     field :name, :string
     field :username, :string
+    has_one :cart, Les.Accounts.Cart, on_delete: :delete_all
 
     timestamps()
   end
@@ -14,8 +15,11 @@ defmodule Les.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
+    |> Les.Repo.preload(cart: :items)
+    # |> IO.inspect()
     |> cast(attrs, [:name, :username])
-    |> validate_required([:name, :username])
+    |> cast_assoc(:cart)
     |> unique_constraint(:username)
+    |> validate_required([:name, :username])
   end
 end

@@ -35,7 +35,7 @@ defmodule Les.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id), do: User |> preload(cart: :items) |> Repo.get!(id)
 
   @doc """
   Creates a user.
@@ -50,7 +50,7 @@ defmodule Les.Accounts do
 
   """
   def create_user(attrs \\ %{}) do
-    %User{}
+    %User{cart: %Les.Accounts.Cart{items: []}}
     |> User.changeset(attrs)
     |> Repo.insert()
   end

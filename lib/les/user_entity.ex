@@ -3,15 +3,15 @@ defmodule Les.UserEntity do
   require Logger
 
   defmodule State do
-    defstruct [:user]
+    defstruct [:user, :cart, :products]
   end
 
   def get_entity_name(user_id), do: :"user_entity_#{user_id}"
 
-  def create(attrs) do
+  def create(attrs, opts \\ [products: Les.Products]) do
     with {:ok, user} <- Les.Accounts.create_user(attrs),
-         {:ok, _} <- Les.EntitiesSupervisor.start_user(user.id) do
-      {:ok, user}
+         {:ok, pid} <- Les.EntitiesSupervisor.start_user(user.id, opts) do
+      {:ok, user, pid}
     else
       error -> error
     end
@@ -32,18 +32,18 @@ defmodule Les.UserEntity do
     GenServer.call(pid, {:get})
   end
 
-  def add_product(pid, product_id, qty) do
-    GenServer.call(pid, {:add_product, product_id, qty})
+  def add_to_cart(pid, product_id, qty) do
+    GenServer.call(pid, {:add_to_cart, product_id, qty})
   end
 
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, [id], name: get_entity_name(id))
+  def start_link(id, opts \\ []) do
+    GenServer.start_link(__MODULE__, [id, opts], name: get_entity_name(id))
   end
 
-  def init([id]) do
+  def init([id, opts]) do
     Logger.info("Start process for user: #{id} - pid: #{inspect self()}")
     user = Les.Accounts.get_user!(id)
-    {:ok, %State{user: user}}
+    {:ok, %State{user: user, cart: user.cart, products: Keyword.get(opts, :products)}}
   end
 
   def handle_call({:update, attrs}, _form, state) do
@@ -52,7 +52,6 @@ defmodule Les.UserEntity do
         {:ok, user} -> {{:ok, user}, %{state | user: user}}
         res -> {res, state}
       end
-
     {:reply, res, new_state}
   end
 
@@ -60,10 +59,9 @@ defmodule Les.UserEntity do
     {:reply, state.user, state}
   end
 
-  def handle_call({:add_product, product_id, qty}, _form, state) do
-    {:ok, product} = Les.Accounts.Products.get(product_id)
-    {:ok, cart} = Les.Accounts.Cart.find_or_create(%{user_id: state.user.id})
-    {:ok, cart} = Les.Accounts.Cart.add_product(cart, product, qty)
-    {:reply, cart, state}
+  def handle_call({:add_to_cart, product_id, qty}, _form, %{cart: cart, products: products}=state) do
+    {:ok, product} = products.get(product_id)
+    {:ok, new_cart} = Les.Carts.add_product(cart, product, qty)
+    {:reply, new_cart, %{state| cart: new_cart}}
   end
 end
