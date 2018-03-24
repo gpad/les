@@ -50,4 +50,21 @@ defmodule Les.DataCase do
       end)
     end)
   end
+
+  @retry_sleep 100
+
+  def eassert(fun, timeout \\ 5_000) do
+    do_eassert(fun, trunc(timeout / @retry_sleep))
+  end
+
+  defp do_eassert(fun, 0), do: fun.()
+  defp do_eassert(fun, times) do
+    try do
+      fun.()
+    rescue
+      _ ->
+      Process.sleep(@retry_sleep)
+      do_eassert(fun, times - 1)
+    end
+  end
 end

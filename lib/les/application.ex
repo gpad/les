@@ -14,6 +14,7 @@ defmodule Les.Application do
       supervisor(LesWeb.Endpoint, []),
       supervisor(Les.EntitiesSupervisor, []),
       supervisor(Les.ProductsSupervisor, []),
+      supervisor(Les.PaymentProcessorSupervisor, []),
       # Start your own worker by calling: Les.Worker.start_link(arg1, arg2, arg3)
       # worker(Les.Worker, [arg1, arg2, arg3]),
     ]

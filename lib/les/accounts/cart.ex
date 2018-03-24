@@ -13,14 +13,9 @@ defmodule Les.Accounts.Cart do
 
   @doc false
   def changeset(%Cart{} = cart, attrs) do
-    # IO.puts("------------------")
-    # IO.puts("attrs: #{inspect attrs}")
     cart
     |> Les.Repo.preload(:items)
-    # |> IO.inspect()
     |> change(attrs)
-    # |> IO.inspect()
-    |> cast_assoc(:items)
-    # |> validate_required([:user])
+    |> put_assoc(:items, attrs.items)
   end
 end

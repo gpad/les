@@ -7,7 +7,7 @@ defmodule Les.Accounts.User do
   schema "users" do
     field :name, :string
     field :username, :string
-    has_one :cart, Les.Accounts.Cart, on_delete: :delete_all
+    has_one :cart, Les.Accounts.Cart, on_delete: :delete_all, on_replace: :nilify
 
     timestamps()
   end
@@ -16,7 +16,6 @@ defmodule Les.Accounts.User do
   def changeset(%User{} = user, attrs) do
     user
     |> Les.Repo.preload(cart: :items)
-    # |> IO.inspect()
     |> cast(attrs, [:name, :username])
     |> cast_assoc(:cart)
     |> unique_constraint(:username)

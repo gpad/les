@@ -6,31 +6,43 @@ defmodule Les.Carts do
   alias Les.Accounts.CartItem
   alias Les.Product
 
+  def amount(%Cart{}=cart) do
+    # Enum.reduce(cart.items, 0, fn item, acc -> item.price + acc end)
+    Enum.reduce(cart.items, 0, &(&1.price + &2))
+  end
+
   def add_product(%Cart{}=cart, %Product{}=product, qty) do
     items = update_items(cart, product, qty)
-    # IO.inspect(">>> GPAD items: #{inspect items}")
     Cart.changeset(cart, %{items: items})
-    # |> IO.inspect()
     |> Repo.update()
   end
 
   defp update_items(cart, product, qty) do
     cart.items
-    |> Enum.filter(fn item -> item.product_id == product.id end)
-    |> update_qty(cart, product, qty)
+    |> Enum.split_with(&(&1.product_id == product.id))
+    |> update_qty(cart.id, product, qty)
   end
 
-  defp update_qty([], cart, product, qty) do
-    cart.items ++ [%CartItem{
+  # add always a new line ...
+  defp update_qty({o1, others}, cart_id, product, qty) do
+    others ++ o1 ++ [%CartItem{
       description: product.description,
       price: product.price,
       product_id: product.id,
       qty: qty,
-      cart_id: cart.id
+      cart_id: cart_id
     }]
   end
-  defp update_qty([item], cart, _product, qty) do
-    cart.items ++ [%CartItem{item | qty: item.qty + qty}]
-  end
-
+  # defp update_qty({[], others}, cart_id, product, qty) do
+  #   others ++ [%CartItem{
+  #     description: product.description,
+  #     price: product.price,
+  #     product_id: product.id,
+  #     qty: qty,
+  #     cart_id: cart_id
+  #   }]
+  # end
+  # defp update_qty({[item], others}, _cart_id, _product, qty) do
+  #   others ++ [%CartItem{item | qty: item.qty + qty}]
+  # end
 end
