@@ -63,7 +63,7 @@ defmodule Les.UserEntity do
       user: user,
       cart: user.cart,
       products: Keyword.get(opts, :products),
-      invoices: %{}, # load pending invoices from DB
+      invoices: %{}, # TODO load pending invoices from DB
       running_payments: %{} # Can I get this value from supervisor ?!?
     }}
   end

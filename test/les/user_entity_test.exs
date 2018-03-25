@@ -64,7 +64,7 @@ defmodule Les.UserEntityTest do
   # test "add product return false if not enough qty available"
 
   @tag timeout: 15_000
-  test "check and pay contatct wharehous to verify qty" do
+  test "checkout and pay could receive payment error" do
     product = Les.CartsTest.product_fixture()
     FakeProducts.add(product)
     {:ok, user, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
