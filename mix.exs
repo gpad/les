@@ -20,7 +20,7 @@ defmodule Les.Mixfile do
   def application do
     [
       mod: {Les.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:riak_core, :logger, :runtime_tools]
     ]
   end
 
@@ -38,11 +38,13 @@ defmodule Les.Mixfile do
       {:phoenix_ecto, "~> 3.2"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:phoenix_live_reload, "~> 1.0", only: [:dev, :gpad_1, :gpad_2, :gpad_3]},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:gen_state_machine, "~> 2.0"},
       {:uuid, "~> 1.1"},
+      {:poolboy, "~> 1.5", override: true},
+      {:riak_core, git: "https://github.com/gpad/riak_core", branch: "otp-20"}
     ]
   end
 
