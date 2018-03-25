@@ -81,7 +81,7 @@ defmodule Les.AccountsTest do
   end
 
   describe "invoices" do
-    alias Les.Accounts.Invoice
+    # alias Les.Accounts.Invoice
 
     # @valid_attrs %{amount: 10, status: "pending", items: []}
     # @update_attrs %{created_at: ~N[2011-05-18 15:01:01.000000]}
