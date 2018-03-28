@@ -1,4 +1,4 @@
-defmodule Les.VNode do
+defmodule Les.EntityVNode do
   require Logger
   @behaviour :riak_core_vnode
 

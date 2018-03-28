@@ -17,7 +17,7 @@ defmodule Les.Application do
 
     case ret do
       {:ok, pid} ->
-        :ok = :riak_core.register(vnode_module: Les.VNode)
+        :ok = :riak_core.register(vnode_module: Les.EntityVNode)
         :ok = :riak_core_node_watcher.service_up(Les.EntityService, self())
         {:ok, pid}
       {:error, reason} ->
