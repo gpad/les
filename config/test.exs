@@ -17,3 +17,10 @@ config :les, Les.Repo,
   database: "les_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :riak_core,
+  node: 'gpad_test@127.0.0.1',
+  web_port: 8198,
+  handoff_port: 8199,
+  ring_state_dir: 'ring_data_dir_test',
+  platform_data_dir: 'data_test'

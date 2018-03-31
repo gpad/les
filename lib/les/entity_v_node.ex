@@ -1,5 +1,6 @@
 defmodule Les.EntityVNode do
   require Logger
+  alias Les.UserEntityServer
   @behaviour :riak_core_vnode
 
   def start_vnode(partition) do
@@ -13,24 +14,20 @@ defmodule Les.EntityVNode do
 
   def handle_command({:ping, v}, _sender, state) do
     Logger.debug("[ping received]: with value: #{inspect v} state: #{inspect state.partition} pid: #{inspect self()}... ")
-    # :timer.sleep(5000)
-    Logger.debug("[ping received]: respond")
     {:reply, :pong, state}
   end
 
-  def handle_command({:put, {k, v}}, _sender, state) do
-    Logger.debug("[put]: k: #{inspect k} v: #{inspect v}")
-    if state.handoff_running do
-      Logger.warn("[put]: k: #{inspect k} v: #{inspect v} - me? #{state.me == self()}")
-    end
-    new_state = Map.update(state, :data, %{}, fn data -> Map.put(data, k, v) end)
-    {:reply, :ok, new_state}
+  def handle_command({:find, user_id}, _sender, state) do
+    # res = Map.fetch(entities, user_id)
+    res = UserEntityServer.find(user_id)
+    {:reply, res, state}
   end
 
-  def handle_command({:put, {req_id, k, v}}, sender, state) do
-    Logger.debug("[ft_put]: req_id: #{inspect req_id} k: #{inspect k} v: #{inspect v} - sender: #{inspect sender}")
-    new_state = Map.update(state, :data, %{}, fn data -> Map.put(data, k, v) end)
-    {:reply, {:ok, req_id}, new_state}
+  def handle_command({:start_user, user_id, opts}, _sender, state) do
+    res = UserEntityServer.start_user(user_id, opts)
+    # Logger.debug("[ft_put]: req_id: #{inspect req_id} k: #{inspect k} v: #{inspect v} - sender: #{inspect sender}")
+    # new_state = Map.update(state, :data, %{}, fn data -> Map.put(data, k, v) end)
+    {:reply, res, state}
   end
 
   def handle_command({:get, {k}}, _sender, state) do

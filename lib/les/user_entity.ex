@@ -1,16 +1,11 @@
 defmodule Les.UserEntity do
-  use GenServer
   require Logger
 
-  defmodule State do
-    defstruct [:user, :cart, :products, :invoices, :running_payments]
-  end
-
-  def get_entity_name(user_id), do: :"user_entity_#{user_id}"
-
+  # TODO create user on vnode? If I don't have the user_id
+  # how can I find it? (UUID?!?)
   def create(attrs, opts \\ [products: Les.Products]) do
     with {:ok, user} <- Les.Accounts.create_user(attrs),
-         {:ok, pid} <- Les.EntitiesSupervisor.start_user(user.id, opts) do
+         {:ok, pid} <- execute_command(user.id, :start_user, [opts]) do
       {:ok, user, pid}
     else
       error -> error
@@ -18,126 +13,44 @@ defmodule Les.UserEntity do
   end
 
   def find(user_id) do
-    case Les.EntitiesSupervisor.find_user(user_id) do
-      {:ok, pid} -> {:ok, pid}
-      _ -> {:error, :not_found}
-    end
+    execute_command(user_id, :find)
   end
 
-  def update(pid, attrs) do
-    GenServer.call(pid, {:update, attrs})
+  def update(user_id, attrs) do
+    execute_command(user_id, :update, [attrs])
   end
 
-  def get(pid) do
-    GenServer.call(pid, {:get})
+  def get(user_id) do
+    execute_command(user_id, :get)
   end
 
-  def add_to_cart(pid, product_id, qty) do
-    GenServer.call(pid, {:add_to_cart, product_id, qty})
+  def add_to_cart(user_id, product_id, qty) do
+    execute_command(user_id, :add_to_cart, [product_id, qty])
   end
 
-  def checkout_and_pay(pid) do
-    GenServer.call(pid, :checkout_and_pay)
+  def checkout_and_pay(user_id) do
+    execute_command(user_id, :checkout_and_pay, [user_id])
   end
 
-  def invoices(pid, filter) do
-    GenServer.call(pid, {:invoices, filter})
+  def invoices(user_id, filter) do
+    execute_command(user_id, :invoices, [user_id, filter])
   end
 
-  def payment_error(pid, invoice_id, reason) do
-    GenServer.cast(pid, {:payment_error, invoice_id, reason})
+  def payment_error(user_id, invoice_id, reason) do
+    execute_command(user_id, :payment_error, [invoice_id, reason])
   end
 
-  def payment_ok(pid, invoice_id, ext_id) do
-    GenServer.cast(pid, {:payment_ok, invoice_id, ext_id})
+  def payment_ok(user_id, invoice_id, ext_id) do
+    execute_command(user_id, :payment_ok, [invoice_id, ext_id])
   end
 
-  def start_link(id, opts \\ []) do
-    GenServer.start_link(__MODULE__, [id, opts], name: get_entity_name(id))
-  end
-
-  def init([id, opts]) do
-    Logger.info("Start process for user: #{id} - pid: #{inspect self()}")
-    user = Les.Accounts.get_user!(id)
-    {:ok, %State{
-      user: user,
-      cart: user.cart,
-      products: Keyword.get(opts, :products),
-      invoices: %{}, # TODO load pending invoices from DB
-      running_payments: %{} # Can I get this value from supervisor ?!?
-    }}
-  end
-
-  def handle_call({:update, attrs}, _form, state) do
-    {res, new_state} =
-      case Les.Accounts.update_user(state.user, attrs) do
-        {:ok, user} -> {{:ok, user}, %{state | user: user}}
-        res -> {res, state}
-      end
-    {:reply, {:ok, res}, new_state}
-  end
-
-  def handle_call({:get}, _form, state) do
-    {:reply, {:ok, state.user}, state}
-  end
-
-  def handle_call({:add_to_cart, product_id, qty}, _form, %{cart: cart, products: products}=state) do
-    {:ok, product} = products.get(product_id)
-    {:ok, new_cart} = Les.Carts.add_product(cart, product, qty)
-    {:reply, {:ok, new_cart}, %{state| cart: new_cart}}
-  end
-
-  def handle_call(:checkout_and_pay, _from, %{cart: cart, user: user, invoices: invoices, running_payments: running_payments} = state) do
-    # TODO - BEGIN TRN
-    {:ok, invoice} = Les.Accounts.create_invoice(cart)
-    {:ok, user} = Les.Accounts.reset_cart(user)
-    {:ok, payment_pid} = Les.PaymentProcessorSupervisor.start_payment(user.id, invoice, %{car_number: "1234"})
-    # TODO - END TRN
-
-    # How to manage a possibile fail ?!?
-    # 1 - set a timout here
-    # 2 - monitor il payment processor
-    # 3 - spawn a watcher that can ?!?
-
-    new_state = %{state |
-      invoices: add_invoice(invoices, invoice),
-      cart: user.cart,
-      user: user,
-      running_payments: add_running_payments(running_payments, payment_pid, invoice.id)
-    }
-    {:reply, {:ok, invoice.id}, new_state}
-  end
-
-  def handle_call({:invoices, filter}, _from, %{invoices: invoices}=state) do
-    ret = Enum.filter(invoices, fn {_, invoice} ->
-      Enum.all?(filter, fn {k, v} ->
-        Map.get(invoice, k) == v
-      end)
-    end) |> Enum.map(fn {_, invoice} -> invoice end)
-    {:reply, {:ok, ret}, state}
-  end
-
-  def handle_cast({:payment_error, invoice_id, _reason}, %{invoices: invoices}=state) do
-    {:ok, invoice} = Les.Accounts.update_invoice(get_invoice(invoices, invoice_id), %{status: "payment_error"})
-    new_state = %{state | invoices: add_invoice(invoices, invoice)}
-    {:noreply, new_state}
-  end
-
-  def handle_cast({:payment_ok, invoice_id, _ext_id}, %{invoices: invoices}=state) do
-    {:ok, invoice} = Les.Accounts.update_invoice(get_invoice(invoices, invoice_id), %{status: "paid"})
-    new_state = %{state | invoices: add_invoice(invoices, invoice)}
-    {:noreply, new_state}
-  end
-
-  defp add_invoice(invoices, invoice) do
-    Map.put(invoices, invoice.id, invoice)
-  end
-
-  defp get_invoice(invoices, id) do
-    Map.get(invoices, id)
-  end
-
-  defp add_running_payments(%{}=running_payments, pid, invoice_id) do
-    Map.put(running_payments, pid, invoice_id)
+  defp execute_command(user_id, command, args \\ []) do
+    idx = :riak_core_util.chash_key({"user", user_id})
+    # pref_list = :riak_core_apl.get_primary_apl(idx, 1, Les.EntityService)
+    # [{index_node, :primary}] = pref_list
+    pref_list = :riak_core_apl.get_apl(idx, 1, Les.EntityService)
+    [index_node] = pref_list
+    message = ([command, user_id] ++ args) |> List.to_tuple
+    :riak_core_vnode_master.sync_command(index_node, message, Les.EntityVNode_master)
   end
 end
