@@ -82,7 +82,7 @@ defmodule Les.UserEntityServer do
         {:ok, user} -> {{:ok, user}, %{state | user: user}}
         res -> {res, state}
       end
-    {:reply, {:ok, res}, new_state}
+    {:reply, res, new_state}
   end
 
   def handle_call({:get}, _form, state) do

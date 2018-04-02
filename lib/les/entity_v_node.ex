@@ -18,29 +18,49 @@ defmodule Les.EntityVNode do
   end
 
   def handle_command({:find, user_id}, _sender, state) do
-    # res = Map.fetch(entities, user_id)
     res = UserEntityServer.find(user_id)
     {:reply, res, state}
   end
 
   def handle_command({:start_user, user_id, opts}, _sender, state) do
     res = UserEntityServer.start_user(user_id, opts)
-    # Logger.debug("[ft_put]: req_id: #{inspect req_id} k: #{inspect k} v: #{inspect v} - sender: #{inspect sender}")
-    # new_state = Map.update(state, :data, %{}, fn data -> Map.put(data, k, v) end)
     {:reply, res, state}
   end
 
-  def handle_command({:get, {k}}, _sender, state) do
-    # Logger.debug("[get]: k: #{inspect k} - me? #{state.me == self()}")
-    if state.handoff_running do
-      Logger.warn("[get]: k: #{inspect k} - me? #{state.me == self()}")
-    end
-    {:reply, Map.get(state.data, k, nil), state}
+  def handle_command({:update, user_id, attrs}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    {:ok, new_user} = UserEntityServer.update(pid, attrs)
+    {:reply, {:ok, new_user}, state}
   end
 
-  def handle_command({:get, {req_id, k}}, sender, state) do
-    Logger.debug("[ft_get]: req_id: #{inspect req_id} k: #{inspect k} - sender: #{inspect sender}")
-    {:reply, {:ok, req_id, Map.get(state.data, k, nil)}, state}
+  def handle_command({:add_to_cart, user_id, product_id, qty}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    {:ok, new_cart} = UserEntityServer.add_to_cart(pid, product_id, qty)
+    {:reply, {:ok, new_cart}, state}
+  end
+
+  def handle_command({:checkout_and_pay, user_id}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    {:ok, new_cart} = UserEntityServer.checkout_and_pay(pid)
+    {:reply, {:ok, new_cart}, state}
+  end
+
+  def handle_command({:invoices, user_id, filter}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    {:ok, invoices} = UserEntityServer.invoices(pid, filter)
+    {:reply, {:ok, invoices}, state}
+  end
+
+  def handle_command({:payment_error, user_id, invoice_id, reason}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    :ok = UserEntityServer.payment_error(pid, invoice_id, reason)
+    {:noreply, state}
+  end
+
+  def handle_command({:payment_ok, user_id, invoice_id, exit_id}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    :ok = UserEntityServer.payment_ok(pid, invoice_id, exit_id)
+    {:noreply, state}
   end
 
   def handoff_starting(dest, state) do

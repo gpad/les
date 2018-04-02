@@ -29,11 +29,21 @@ defmodule Les.UserEntityTest do
     assert is_pid(pid)
   end
 
+  test "update user" do
+    {:ok, user, _pid} = UserEntity.create(%{name: "n1", username: "un42"})
+    {:ok, new_user} = UserEntity.update(user.id, %{name: "n42"})
+    assert %Les.Accounts.User{} = user
+    assert user.username == "un42"
+    assert "un42" == new_user.username
+    assert user.id == new_user.id
+    assert new_user.name == "n42"
+  end
+
   test "add product to user" do
     product = product_fixture()
     FakeProducts.add(product)
-    {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
-    {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)
+    {:ok, user, _pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
+    {:ok, cart} = UserEntity.add_to_cart(user.id, product.id, 1)
     [%Les.Carts.CartItem{}=item] = cart.items
     assert_item(item, product, 1)
   end
@@ -43,9 +53,9 @@ defmodule Les.UserEntityTest do
     p2 = product_fixture(description: "t2", ext_id: 2)
     FakeProducts.add(p1)
     FakeProducts.add(p2)
-    {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
-    {:ok, _} = UserEntity.add_to_cart(pid, p1.id, 1)
-    {:ok, cart} = UserEntity.add_to_cart(pid, p2.id, 1)
+    {:ok, user, _pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
+    {:ok, _} = UserEntity.add_to_cart(user.id, p1.id, 1)
+    {:ok, cart} = UserEntity.add_to_cart(user.id, p2.id, 1)
     assert [%CartItem{}=i1, %CartItem{}=i2] = cart.items
     assert_item(i1, p1, 1)
     assert_item(i2, p2, 1)
@@ -54,9 +64,9 @@ defmodule Les.UserEntityTest do
   # test "add more same product on cart increment qty" do
   #   product = product_fixture()
   #   FakeProducts.add(product)
-  #   {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
-  #   {:ok, _} = UserEntity.add_to_cart(pid, product.id, 1)
-  #   {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)
+  #   {:ok, user, _pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
+  #   {:ok, _} = UserEntity.add_to_cart(user.id, product.id, 1)
+  #   {:ok, cart} = UserEntity.add_to_cart(user.id, product.id, 1)
   #   [%Les.Carts.CartItem{}=item] = cart.items
   #   assert_item(item, product, 2)
   # end
@@ -67,11 +77,11 @@ defmodule Les.UserEntityTest do
   test "checkout and pay could receive payment error" do
     product = product_fixture()
     FakeProducts.add(product)
-    {:ok, user, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
-    {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)
-    {:ok, invoice_id} = UserEntity.checkout_and_pay(pid)
+    {:ok, user, _pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
+    {:ok, cart} = UserEntity.add_to_cart(user.id, product.id, 1)
+    {:ok, invoice_id} = UserEntity.checkout_and_pay(user.id)
     eassert(fn ->
-      assert {:ok, [invoice]} = UserEntity.invoices(pid, id: invoice_id)
+      assert {:ok, [invoice]} = UserEntity.invoices(user.id, id: invoice_id)
       assert invoice.cart_id == cart.id
       assert invoice.user_id == user.id
       assert invoice.id == invoice_id

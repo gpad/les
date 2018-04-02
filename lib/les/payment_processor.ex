@@ -37,14 +37,12 @@ defmodule Les.PaymentProcessor do
   end
 
   def handle_event(:cast, :respond, :payed, %{user_id: user_id, invoice: invoice, ext_id: ext_id}) do
-    {:ok, user} = Les.UserEntity.find(user_id)
-    Les.UserEntity.payment_ok(user, invoice.id, ext_id)
+    Les.UserEntity.payment_ok(user_id, invoice.id, ext_id)
     :stop
   end
 
   def handle_event(:cast, :respond, :refused, %{user_id: user_id, invoice: invoice, reason: reason}) do
-    {:ok, user} = Les.UserEntity.find(user_id)
-    Les.UserEntity.payment_error(user, invoice.id, reason)
+    Les.UserEntity.payment_error(user_id, invoice.id, reason)
     :stop
   end
 

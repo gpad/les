@@ -29,11 +29,11 @@ defmodule Les.UserEntity do
   end
 
   def checkout_and_pay(user_id) do
-    execute_command(user_id, :checkout_and_pay, [user_id])
+    execute_command(user_id, :checkout_and_pay)
   end
 
   def invoices(user_id, filter) do
-    execute_command(user_id, :invoices, [user_id, filter])
+    execute_command(user_id, :invoices, [filter])
   end
 
   def payment_error(user_id, invoice_id, reason) do

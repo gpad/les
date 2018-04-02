@@ -27,6 +27,7 @@ config :lager,
   error_logger_hwm: 5000
 
 config :sasl,
+  sasl_error_logger: false,
   errlog_type: :error
 
 config :riak_core,
