@@ -39,6 +39,15 @@ defmodule Les.UserEntityTest do
     assert new_user.name == "n42"
   end
 
+  test "get user read data from DB" do
+    {:ok, %{id: user_id}=_user, _pid} = UserEntity.create(%{name: "n1", username: "un42"})
+    {:ok, user_before} = UserEntity.get(user_id)
+    {:ok, _user} = UserEntity.update(user_id, %{name: "n42"})
+    {:ok, user_after} = UserEntity.get(user_id)
+    assert %Les.Accounts.User{id: ^user_id, name: "n1", username: "un42"} = user_before
+    assert %Les.Accounts.User{id: ^user_id, name: "n42", username: "un42"} = user_after
+  end
+
   test "add product to user" do
     product = product_fixture()
     FakeProducts.add(product)

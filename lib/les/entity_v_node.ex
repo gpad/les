@@ -27,6 +27,12 @@ defmodule Les.EntityVNode do
     {:reply, res, state}
   end
 
+  def handle_command({:get, user_id}, _sender, state) do
+    {:ok, pid} = UserEntityServer.find(user_id)
+    res = UserEntityServer.get(pid)
+    {:reply, res, state}
+  end
+
   def handle_command({:update, user_id, attrs}, _sender, state) do
     {:ok, pid} = UserEntityServer.find(user_id)
     {:ok, new_user} = UserEntityServer.update(pid, attrs)
