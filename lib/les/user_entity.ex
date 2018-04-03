@@ -130,12 +130,10 @@ defmodule Les.UserEntity do
   end
 
   defp add_invoice(invoices, invoice) do
-    # [invoice | invoices]
     Map.put(invoices, invoice.id, invoice)
   end
 
   defp get_invoice(invoices, id) do
-    # Enum.find(invoices, &(&1.id == id))
     Map.get(invoices, id)
   end
 

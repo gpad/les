@@ -9,10 +9,6 @@ defmodule Les.Product do
     price: nil,
     qty: nil,
   ]
-
-  # def new(opts) do
-  #   Map.into(opts, %Les.Product{})
-  # end
 end
 
 defmodule Les.Products do
