@@ -26,6 +26,6 @@ npm-debug.log
 # variables.
 /config/*.secret.exs
 
-/log
+/log*
 /data*
 /ring_data*
