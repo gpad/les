@@ -7,7 +7,7 @@ defmodule Les.Accounts.User do
   schema "users" do
     field :name, :string
     field :username, :string
-    has_one :cart, Les.Accounts.Cart, on_delete: :delete_all, on_replace: :nilify
+    has_one :cart, Les.Carts.Cart, on_delete: :delete_all, on_replace: :nilify
 
     timestamps()
   end

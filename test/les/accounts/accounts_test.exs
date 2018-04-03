@@ -5,7 +5,7 @@ defmodule Les.AccountsTest do
 
   describe "users" do
     alias Les.Accounts.User
-    alias Les.Accounts.Cart
+    alias Les.Carts.Cart
 
     @valid_attrs %{name: "some name", username: "some username"}
     # @update_attrs %{name: "some updated name", username: "some updated username"}
@@ -81,7 +81,7 @@ defmodule Les.AccountsTest do
   end
 
   describe "invoices" do
-    # alias Les.Accounts.Invoice
+    # alias Les.Invoices.Invoice
 
     # @valid_attrs %{amount: 10, status: "pending", items: []}
     # @update_attrs %{created_at: ~N[2011-05-18 15:01:01.000000]}
@@ -142,7 +142,7 @@ defmodule Les.AccountsTest do
   end
 
   # describe "invoice_items" do
-  #   alias Les.Accounts.InvoiceItem
+  #   alias Les.Invoices.InvoiceItem
   #
   #   @valid_attrs %{product_id: "7488a646-e31f-11e4-aace-600308960662"}
   #   @update_attrs %{product_id: "7488a646-e31f-11e4-aace-600308960668"}
@@ -202,7 +202,7 @@ defmodule Les.AccountsTest do
   # end
 
   # describe "invoice_payment_log" do
-  #   alias Les.Accounts.InvoicePaymentLog
+  #   alias Les.Invoices.InvoicePaymentLog
   #
   #   @valid_attrs %{result: 42, result_message: "some result_message"}
   #   @update_attrs %{result: 43, result_message: "some updated result_message"}

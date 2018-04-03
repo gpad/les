@@ -1,12 +1,12 @@
-defmodule Les.Accounts.Cart do
+defmodule Les.Carts.Cart do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Les.Accounts.Cart
+  alias Les.Carts.Cart
 
 
   schema "carts" do
     belongs_to :user, Les.Accounts.User
-    has_many :items, Les.Accounts.CartItem, on_replace: :delete, on_delete: :delete_all
+    has_many :items, Les.Carts.CartItem, on_replace: :delete, on_delete: :delete_all
 
     timestamps()
   end

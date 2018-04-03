@@ -1,7 +1,7 @@
-defmodule Les.Accounts.InvoiceItem do
+defmodule Les.Invoices.InvoiceItem do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Les.Accounts.InvoiceItem
+  alias Les.Invoices.InvoiceItem
 
 
   schema "invoice_items" do
@@ -10,7 +10,7 @@ defmodule Les.Accounts.InvoiceItem do
     field :product_id, :string
     field :qty, :integer
 
-    belongs_to :invoice, Les.Accounts.Invoice
+    belongs_to :invoice, Les.Invoices.Invoice
 
     timestamps()
   end

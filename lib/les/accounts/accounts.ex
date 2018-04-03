@@ -7,9 +7,9 @@ defmodule Les.Accounts do
   alias Les.Repo
 
   alias Les.Accounts.User
-  alias Les.Accounts.Cart
-  alias Les.Accounts.Invoice
-  alias Les.Accounts.CartItem
+  alias Les.Carts.Cart
+  alias Les.Invoices.Invoice
+  alias Les.Carts.CartItem
 
   @doc """
   Returns the list of users.
@@ -53,7 +53,7 @@ defmodule Les.Accounts do
 
   """
   def create_user(attrs \\ %{}) do
-    %User{cart: %Les.Accounts.Cart{items: []}}
+    %User{cart: %Les.Carts.Cart{items: []}}
     |> User.changeset(attrs)
     |> Repo.insert()
   end
@@ -105,7 +105,7 @@ defmodule Les.Accounts do
     User.changeset(user, %{})
   end
 
-  alias Les.Accounts.Invoice
+  alias Les.Invoices.Invoice
 
   @doc """
   Returns the list of invoices.
@@ -216,7 +216,7 @@ defmodule Les.Accounts do
   #   Invoice.changeset(invoice, %{})
   # end
   #
-  # alias Les.Accounts.InvoiceItem
+  # alias Les.Invoices.InvoiceItem
   #
   # @doc """
   # Returns the list of invoice_items.
@@ -312,7 +312,7 @@ defmodule Les.Accounts do
   #   InvoiceItem.changeset(invoice_item, %{})
   # end
   #
-  # alias Les.Accounts.InvoicePaymentLog
+  # alias Les.Invoices.InvoicePaymentLog
   #
   # @doc """
   # Returns the list of invoice_payment_log.

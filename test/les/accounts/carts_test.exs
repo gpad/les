@@ -5,8 +5,8 @@ defmodule Les.CartsTest do
 
   describe "users" do
     # alias Les.Accounts.User
-    # alias Les.Accounts.Cart
-    alias Les.Accounts.CartItem
+    # alias Les.Carts.Cart
+    alias Les.Carts.CartItem
 
     @valid_attrs %{name: "some name", username: "some username"}
     # @update_attrs %{name: "some updated name", username: "some updated username"}

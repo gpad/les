@@ -1,7 +1,7 @@
 defmodule Les.PaymentProcessor do
   use GenStateMachine
   alias Les.Fake
-  alias Les.Accounts.Invoice
+  alias Les.Invoices.Invoice
   require Logger
 
   def start_link(user_id, %Invoice{}=invoice, payment_data) do

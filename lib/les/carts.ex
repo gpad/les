@@ -2,8 +2,8 @@ defmodule Les.Carts do
   import Ecto.Query, warn: false
   alias Les.Repo
 
-  alias Les.Accounts.Cart
-  alias Les.Accounts.CartItem
+  alias Les.Carts.Cart
+  alias Les.Carts.CartItem
   alias Les.Product
 
   def amount(%Cart{}=cart) do

@@ -2,7 +2,7 @@ defmodule Les.UserEntityTest do
   use Les.DataCase
   alias Les.UserEntity
   alias Les.Product
-  alias Les.Accounts.CartItem
+  alias Les.Carts.CartItem
 
   defmodule FakeProducts do
     def start_link() do
@@ -34,7 +34,7 @@ defmodule Les.UserEntityTest do
     FakeProducts.add(product)
     {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
     {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)
-    [%Les.Accounts.CartItem{}=item] = cart.items
+    [%Les.Carts.CartItem{}=item] = cart.items
     assert_item(item, product, 1)
   end
 
@@ -57,7 +57,7 @@ defmodule Les.UserEntityTest do
   #   {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
   #   {:ok, _} = UserEntity.add_to_cart(pid, product.id, 1)
   #   {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)
-  #   [%Les.Accounts.CartItem{}=item] = cart.items
+  #   [%Les.Carts.CartItem{}=item] = cart.items
   #   assert_item(item, product, 2)
   # end
 

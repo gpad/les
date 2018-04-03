@@ -1,7 +1,7 @@
-defmodule Les.Accounts.CartItem do
+defmodule Les.Carts.CartItem do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Les.Accounts.CartItem
+  alias Les.Carts.CartItem
 
 
   schema "cart_items" do
@@ -10,7 +10,7 @@ defmodule Les.Accounts.CartItem do
     field :product_id, :string
     field :qty, :integer
 
-    belongs_to :cart, Les.Accounts.Cart
+    belongs_to :cart, Les.Carts.Cart
 
     timestamps()
   end

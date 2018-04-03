@@ -1,7 +1,7 @@
-defmodule Les.Accounts.Invoice do
+defmodule Les.Invoices.Invoice do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Les.Accounts.Invoice
+  alias Les.Invoices.Invoice
 
 
   schema "invoices" do
@@ -9,8 +9,8 @@ defmodule Les.Accounts.Invoice do
     field :status, :string
 
     belongs_to :user, Les.Accounts.User
-    belongs_to :cart, Les.Accounts.Cart
-    has_many :items, Les.Accounts.InvoiceItem, on_replace: :delete, on_delete: :delete_all
+    belongs_to :cart, Les.Carts.Cart
+    has_many :items, Les.Invoices.InvoiceItem, on_replace: :delete, on_delete: :delete_all
 
     timestamps()
   end
