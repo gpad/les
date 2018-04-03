@@ -30,7 +30,7 @@ defmodule Les.UserEntityTest do
   end
 
   test "add product to user" do
-    product = Les.CartsTest.product_fixture()
+    product = product_fixture()
     FakeProducts.add(product)
     {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
     {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)
@@ -39,8 +39,8 @@ defmodule Les.UserEntityTest do
   end
 
   test "add more different products on cart get one lines for product" do
-    p1 = Les.CartsTest.product_fixture()
-    p2 = Les.CartsTest.product_fixture(description: "t2", ext_id: 2)
+    p1 = product_fixture()
+    p2 = product_fixture(description: "t2", ext_id: 2)
     FakeProducts.add(p1)
     FakeProducts.add(p2)
     {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
@@ -52,7 +52,7 @@ defmodule Les.UserEntityTest do
   end
 
   # test "add more same product on cart increment qty" do
-  #   product = Les.CartsTest.product_fixture()
+  #   product = product_fixture()
   #   FakeProducts.add(product)
   #   {:ok, _, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
   #   {:ok, _} = UserEntity.add_to_cart(pid, product.id, 1)
@@ -65,7 +65,7 @@ defmodule Les.UserEntityTest do
 
   @tag timeout: 15_000
   test "checkout and pay could receive payment error" do
-    product = Les.CartsTest.product_fixture()
+    product = product_fixture()
     FakeProducts.add(product)
     {:ok, user, pid} = UserEntity.create(%{name: "n1", username: "un1"}, [products: FakeProducts])
     {:ok, cart} = UserEntity.add_to_cart(pid, product.id, 1)

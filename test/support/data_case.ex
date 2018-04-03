@@ -67,4 +67,15 @@ defmodule Les.DataCase do
       do_eassert(fun, times - 1)
     end
   end
+
+  def product_fixture(opts \\ []) do
+    %Les.Product{
+      id: UUID.uuid4(),
+      description: "test",
+      provider: "test",
+      ext_id: 1,
+      price: 666,
+      qty: 123456,
+    } |> Map.merge(Map.new(opts))
+  end
 end
