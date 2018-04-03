@@ -7,7 +7,6 @@ defmodule Les.Carts do
   alias Les.Product
 
   def amount(%Cart{}=cart) do
-    # Enum.reduce(cart.items, 0, fn item, acc -> item.price + acc end)
     Enum.reduce(cart.items, 0, &(&1.price + &2))
   end
 

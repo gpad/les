@@ -21,17 +21,6 @@ defmodule Les.CartsTest do
     #   user
     # end
 
-    # def product_fixture(opts \\ []) do
-    #   %Les.Product{
-    #     id: UUID.uuid4(),
-    #     description: "test",
-    #     provider: "test",
-    #     ext_id: 1,
-    #     price: 666,
-    #     qty: 123456,
-    #   } |> Map.merge(Map.new(opts))
-    # end
-
     test "add item in a empty cart" do
       {:ok, user} = Accounts.create_user(@valid_attrs)
       product = product_fixture()
