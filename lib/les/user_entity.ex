@@ -101,7 +101,7 @@ defmodule Les.UserEntity do
 
     new_state = %{state |
       invoices: add_invoice(invoices, invoice),
-      cart: cart,
+      cart: user.cart,
       user: user,
       running_payments: add_running_payments(running_payments, payment_pid, invoice.id)
     }

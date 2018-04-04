@@ -9,7 +9,7 @@ defmodule Les.ProductsFetcher do
   end
 
   def init([provider]) do
-    Logger.info("Start a new fetcher for #{provider}")
+    # Logger.info("Start a new fetcher for #{provider}")
     send(self(), :fetch)
     {:ok, provider}
   end

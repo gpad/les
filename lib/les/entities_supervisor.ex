@@ -4,7 +4,8 @@ defmodule Les.EntitiesSupervisor do
   def start_user(user_id, opts \\ [products: Les.Products]) do
     Supervisor.start_child(__MODULE__, %{
       id: Les.UserEntity.get_entity_name(user_id),
-      start: {Les.UserEntity, :start_link, [user_id, opts]}
+      start: {Les.UserEntity, :start_link, [user_id, opts]},
+      # restart: :temporary
     })
   end
 

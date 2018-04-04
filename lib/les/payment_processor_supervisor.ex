@@ -13,9 +13,8 @@ defmodule Les.PaymentProcessorSupervisor do
     import Supervisor.Spec
 
     Supervisor.init([
-      worker(Les.PaymentProcessor, [])
-      ], strategy: :simple_one_for_one,
-      restart: :temporary)
+      worker(Les.PaymentProcessor, [], restart: :temporary)
+      ], strategy: :simple_one_for_one)
   end
 
 
