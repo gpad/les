@@ -16,6 +16,4 @@ defmodule Les.PaymentProcessorSupervisor do
       worker(Les.PaymentProcessor, [], restart: :temporary)
       ], strategy: :simple_one_for_one)
   end
-
-
 end

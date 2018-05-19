@@ -11,9 +11,8 @@ defmodule Les.PaymentProcessor do
       name: :"payment_#{user_id}_#{invoice.id}")
   end
 
-  # Callbacks
   def init([user_id, invoice, payment_data]) do
-    Logger.info "init !!!"
+    Logger.info "Init payment #{invoice.amount}"
     {
       :ok,
       :started,
