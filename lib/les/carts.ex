@@ -3,7 +3,6 @@ defmodule Les.Carts do
   alias Les.Repo
 
   alias Les.Carts.Cart
-  alias Les.Carts.CartItem
   alias Les.Product
 
   def amount(%Cart{}=cart) do
@@ -22,9 +21,8 @@ defmodule Les.Carts do
     |> update_qty(cart.id, product, qty)
   end
 
-  # add always a new line ...
-  defp update_qty({o1, others}, cart_id, product, qty) do
-    others ++ o1 ++ [%CartItem{
+  defp update_qty({[], others}, cart_id, product, qty) do
+    others ++ [%{
       description: product.description,
       price: product.price,
       product_id: product.id,
@@ -32,16 +30,7 @@ defmodule Les.Carts do
       cart_id: cart_id
     }]
   end
-  # defp update_qty({[], others}, cart_id, product, qty) do
-  #   others ++ [%CartItem{
-  #     description: product.description,
-  #     price: product.price,
-  #     product_id: product.id,
-  #     qty: qty,
-  #     cart_id: cart_id
-  #   }]
-  # end
-  # defp update_qty({[item], others}, _cart_id, _product, qty) do
-  #   others ++ [%CartItem{item | qty: item.qty + qty}]
-  # end
+  defp update_qty({[item], others}, _cart_id, _product, qty) do
+    others ++ [%{id: item.id, qty: item.qty + qty}]
+  end
 end
