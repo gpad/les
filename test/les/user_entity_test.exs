@@ -1,7 +1,7 @@
 defmodule Les.UserEntityTest do
   use Les.DataCase
   alias Les.UserEntity
-  alias Les.Product
+  alias Les.Products.Product
   alias Les.Carts.CartItem
 
   defmodule FakeProducts do
@@ -9,7 +9,7 @@ defmodule Les.UserEntityTest do
       Agent.start_link(fn -> %{} end, name: __MODULE__)
     end
 
-    def add(%Les.Product{id: id} = product) do
+    def add(%Les.Products.Product{id: id} = product) do
       Agent.update(__MODULE__, fn state -> Map.put(state, id, product) end)
     end
     def get(id) do

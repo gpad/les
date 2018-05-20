@@ -7,7 +7,7 @@ defmodule Les.Application do
       supervisor(Les.Repo, []),
       supervisor(LesWeb.Endpoint, []),
       supervisor(Les.EntitiesSupervisor, []),
-      supervisor(Les.ProductsSupervisor, []),
+      supervisor(Les.Products.Supervisor, []),
       supervisor(Les.PaymentProcessorSupervisor, []),
     ]
     opts = [strategy: :one_for_one, name: Les.Supervisor]

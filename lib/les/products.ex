@@ -1,16 +1,3 @@
-defmodule Les.Product do
-
-  @enforce_keys [:description, :provider, :ext_id, :price, :qty]
-  defstruct [
-    id: UUID.uuid4(),
-    description: "",
-    provider: nil,
-    ext_id: nil,
-    price: nil,
-    qty: nil,
-  ]
-end
-
 defmodule Les.Products do
   use GenServer
   require Logger
@@ -94,7 +81,7 @@ defmodule Les.Products do
       {:ok, _} ->
         state
       _ ->
-        {:ok, pid} = Les.ProductsSupervisor.start_fetcher(host)
+        {:ok, pid} = Les.Products.Supervisor.start_fetcher(host)
         %State{state | providers: Map.merge(providers, %{host => pid})}
     end
   end
@@ -105,7 +92,7 @@ defmodule Les.Products do
         Logger.warn("Unable to remove provider #{host}. It doesn't exist.")
         state
       {pid, new_providers} ->
-        Les.ProductsSupervisor.remove_fetcher(pid)
+        Les.Products.Supervisor.remove_fetcher(pid)
         %State{state | providers: new_providers}
     end
   end
@@ -114,7 +101,7 @@ defmodule Les.Products do
     ps1 = map_by_ext_key(products, provider)
     new_products = Enum.reduce(products_to_add, products, fn (%{"id" => ext_id}=p, acc) ->
       product = Map.get_lazy(ps1, ext_id, fn ->
-        %Les.Product{
+        %Les.Products.Product{
           id: UUID.uuid4(),
           description: p["description"],
           provider: provider,

@@ -69,7 +69,7 @@ defmodule Les.DataCase do
   end
 
   def product_fixture(opts \\ []) do
-    %Les.Product{
+    %Les.Products.Product{
       id: UUID.uuid4(),
       description: "test",
       provider: "test",

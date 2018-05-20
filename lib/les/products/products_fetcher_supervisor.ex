@@ -1,4 +1,4 @@
-defmodule Les.ProductsFetcherSupervisor do
+defmodule Les.Products.FetcherSupervisor do
   use Supervisor
 
   def start_fetcher(provider) do
@@ -17,7 +17,7 @@ defmodule Les.ProductsFetcherSupervisor do
     import Supervisor.Spec
 
     Supervisor.init([
-      worker(Les.ProductsFetcher, [])
+      worker(Les.Products.Fetcher, [])
       ], strategy: :simple_one_for_one)
   end
 end

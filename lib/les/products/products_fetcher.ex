@@ -1,4 +1,4 @@
-defmodule Les.ProductsFetcher do
+defmodule Les.Products.Fetcher do
   use GenServer
   require Logger
 

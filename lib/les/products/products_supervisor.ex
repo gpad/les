@@ -1,12 +1,12 @@
-defmodule Les.ProductsSupervisor do
+defmodule Les.Products.Supervisor do
   use Supervisor
 
   def start_fetcher(provider) do
-    Les.ProductsFetcherSupervisor.start_fetcher(provider)
+    Les.Products.FetcherSupervisor.start_fetcher(provider)
   end
 
   def remove_fetcher(pid) do
-    Les.ProductsFetcherSupervisor.remove_fetcher(pid)
+    Les.Products.FetcherSupervisor.remove_fetcher(pid)
   end
 
   def start_link() do
@@ -18,7 +18,7 @@ defmodule Les.ProductsSupervisor do
 
     children = [
       worker(Les.Products, []),
-      supervisor(Les.ProductsFetcherSupervisor, []),
+      supervisor(Les.Products.FetcherSupervisor, []),
     ]
     Supervisor.init(children, strategy: :rest_for_one)
   end
