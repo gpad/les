@@ -16,7 +16,7 @@ defmodule Les.Products.Fetcher do
 
   def handle_info(:fetch, provider) do
     products = fetch_provider(provider)
-    send(Process.whereis(Les.Products), {:products, provider, products})
+    Les.Products.add_products(provider, products)
     Process.send_after(self(), :fetch, @interval_ms)
     {:noreply, provider}
   end

@@ -19,7 +19,7 @@ defmodule Les.Products do
 
   def init(_) do
     delay = trunc(60_000 / length(@providers))
-    Enum.reduce(@providers, 5000, fn provider, acc ->
+    Enum.reduce(@providers, 0, fn provider, acc ->
       :timer.apply_after(acc, __MODULE__, :add_provider, [provider])
       acc + delay
     end)
@@ -40,6 +40,10 @@ defmodule Les.Products do
 
   def remove_provider(host) do
     GenServer.call(__MODULE__, {:remove_provider, host})
+  end
+
+  def add_products(provider, products) do
+    GenServer.cast(__MODULE__, {:add_products, provider, products})
   end
 
   def handle_call({:get, id}, _from, state) do
@@ -65,7 +69,7 @@ defmodule Les.Products do
     {:reply, :ok, new_state}
   end
 
-  def handle_info({:products, provider, result}, state) do
+  def handle_cast({:add_products, provider, result}, state) do
     new_state = case result do
       {:ok, %{"products" => products}} ->
         add_products(state, provider, products)

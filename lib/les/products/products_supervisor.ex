@@ -17,9 +17,9 @@ defmodule Les.Products.Supervisor do
     import Supervisor.Spec
 
     children = [
-      worker(Les.Products, []),
       supervisor(Les.Products.FetcherSupervisor, []),
+      worker(Les.Products, []),
     ]
-    Supervisor.init(children, strategy: :rest_for_one)
+    Supervisor.init(children, strategy: :one_for_all)
   end
 end
