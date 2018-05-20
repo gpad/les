@@ -17,7 +17,6 @@ defmodule Les.Carts.CartItem do
 
   @doc false
   def changeset(%CartItem{} = cart_item, attrs) do
-    # IO.puts(">>> ECCOMI!!!!\n\n\n\n")
     cart_item
     |> cast(attrs, [:product_id, :description, :qty, :price])
     |> validate_required([:product_id, :description, :qty, :price])
