@@ -46,6 +46,10 @@ defmodule Les.Products do
     GenServer.cast(__MODULE__, {:add_products, provider, products})
   end
 
+  def sync_products(products) do
+    GenServer.cast(__MODULE__, {:sync_products, products})
+  end
+
   def handle_call({:get, id}, _from, state) do
     ret = case Map.fetch(state.products, id) do
       :error -> Logger.warn("Unable to find products with id: #{inspect id}")
@@ -78,6 +82,10 @@ defmodule Les.Products do
         state
     end
     {:noreply, new_state}
+  end
+
+  def handle_cast({:sync_products, new_products}, %State{products: products}=state) do
+    {:noreply, %{state | products: Map.merge(products, new_products)}}
   end
 
   defp add_provider(%State{providers: providers}=state, host) do
@@ -116,6 +124,7 @@ defmodule Les.Products do
       end)
       Map.put(acc, product.id, product)
     end)
+    sync_nodes(Node.list(), new_products)
     %State{state | products: new_products}
   end
 
@@ -127,6 +136,12 @@ defmodule Les.Products do
         acc
       end
     end)
+  end
+
+  defp sync_nodes([], _), do: :ok
+  defp sync_nodes([n | nodes], products) do
+    :rpc.cast(n, __MODULE__, :sync_products, [products])
+    sync_nodes(nodes, products)
   end
 
 end
